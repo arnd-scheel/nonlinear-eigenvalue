@@ -1,0 +1,88 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Code for finding PGMs in constant coefficient problems
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Takes examples defined as first-order constant coefficient spatial ODE with polynomial dependence in lambda and finds closest PGM to a reference point
+
+Therefore computes Taylor expansions of stable and unstable subspaces in Grassmannian, forms the nonlinear eigenvalue problem iota, and then finds spectral values of iota using inverse power iterations; finds the solution in 3 steps
+1) first coarse iteration, used to make sure we identify the actually closest root (choosing lam_start complex makes this usually unique
+2) reset the starting value to the guess from (1) and do few iterations to get closer, reset repeatedly
+3) use Newton method to wrap up, setting up a pinched double root equation; also computes guess for nu
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+compute local Taylor jet of expansion of Grassmannian using homological equation
+
+pdr.m  % main file, uses 
+    computes pinched double roots via inverse power method for iota 
+    iota is constructed at initial point using schur decompositions to get unstable and stable eigenspaces --- unstable_eigenspace.m
+    eu_taylor then computes Taylor jets of unstable eigenspace in the Grassmannian and hence Taylor expansion of iota
+    pencil_eig uses iota and its Taylor jet to find closest eigenvalue of pencil iota
+    
+    after first step which finds approximate guess, uses lower order approximation of pencil shifted to current lambda value to improve approximation 
+    
+    after second step, uses Newton method to converge with high accuracy
+    
+spatial_pencil.m
+    defines examples used in pdr.m
+    
+eu_taylor_polynomial_pencil.m
+    implements eigenspace_expansion.m as function returning the Taylol jet; solves in particular Sylvester equation after Schur normal form; this appears best, compared to gmres solvers
+
+eu_newton.m
+    find invariant subspace from homological equation starting from an approximate invatiant subspace using newton 
+
+eu_hom.m 
+    computes the eigenspace for restarts of the power iteration using a Newton based homotopy along a small deformation of a straight line (avoiding generically hitting branch points or poles); as an alternative to predicting the new eigenspace from Taylor expansion only, which may be poor if outside the radius of convergence of the Taylor series
+    
+pencil_eig.m 
+    given polynomial approximation of operator pencil, use inverse power method to find eigenvalue/spectrum
+
+pol_shift.m
+    shifts the polynomial pencil A=sum A_k lam^k =sum B_k (lam-lam0)^k
+    
+pol_eval.m
+    evaluates the polynomial pencil at a fixed lambda, needed in Newton routine
+    
+pol_der_eval.m
+    evaluates the derivative of the polynomial pencil at a fixed lambda, needed also in Newton routine
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+lap_dir.m 
+    PGMs are always roots of the Evans function in constant coefficient problems. lap_dir demonstrates that the algorithm will also find the first PGM if it's not a root of the Evans function at the example of the Laplacian with Dirichlet boundary conditions
+    
+todo
+    a couple of issues that might be worth addressing; in particular how to solve those Sylvester equations accurately
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+supp_materials:
+
+Grassmannian_expansion_notes.pdf
+    theory, how to find Taylorjets successively
+
+coupled_kpp_double_double_roots.nb
+    mathematica notebook that computes double double roots in coupled kpp for reference
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+old:
+
+eigenspace expansion.m
+    takes linear matrix pencil and computes expansion of unstable eigenspace 
+    
+
+unstable_eigenspace.m
+    use shur form and ordering in schur form to find unstable eigenspace at fixed parameter values
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+linear_lambda_dependence
+
+somewhat simpler code for linear lambda dependence; main simplifications:
+    eu_polynomial: the equations for the Grassmannian have one less loop
+    shift of symbol is explicit rather than recentering a polynomial which needs extra routine poly_shift
+    
