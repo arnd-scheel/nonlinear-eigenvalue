@@ -6,3 +6,11 @@ Code findst closest singularity to a reference starting point
 
 Subdirectory constant_coefficient treats problems where A(x;lambda)=A(lambda), polynomial in lambda
 Subdirectory variable_coefficient allows for x-dependence
+
+Description of algorithms in 
+_Nonlinear eigenvalue methods for linear pointwise stability of nonlinear waves_
+_Arnd Scheel_
+
+available at 
+www.math.umn.edu/~scheel/publications.html
+
