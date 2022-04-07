@@ -1,0 +1,5 @@
+plots of convergence for eigenvalues and branch points in allen-cahn, 
+
+* convergence wrto lam_start (no restarts)
+    pdr_cgce_initial and associated spatial_pencil
+        
